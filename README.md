@@ -1,9 +1,9 @@
 genericservices
 ===============
 
-A set of Rest Service APIs
+Set of Restful Service APIs written to be used across !!!
 
 Currently
-  Station details from code(IRCTC)
+  -Station details from code(IRCTC)
 
 
