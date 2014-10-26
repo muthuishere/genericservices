@@ -8,6 +8,8 @@
  * If you are using Composer, you can skip this step.
  */
  require_once dirname(__FILE__) . '/include/PdoHandler.php';
+ require_once dirname(__FILE__) . '/include/PythonHandler.php';
+ require_once dirname(__FILE__) . '/include/CurlHandler.php';
 //require_once dirname(__FILE__) . '/include/PassHash.php';
 require dirname(__FILE__) . '/Slim/Slim.php';
 
@@ -74,6 +76,45 @@ function array2xml($array, $wrap='result', $upper=false) {
     return $xml;
 }
 
+function startsWith($haystack,$needle,$case=true)
+{
+    if ($case)
+        return strpos($haystack, $needle, 0) === 0;
+
+    return stripos($haystack, $needle, 0) === 0;
+}
+
+function endsWith($haystack,$needle,$case=true)
+{
+    $expectedPosition = strlen($haystack) - strlen($needle);
+
+    if ($case)
+        return strrpos($haystack, $needle, 0) === $expectedPosition;
+
+    return strripos($haystack, $needle, 0) === $expectedPosition;
+}
+
+function echoRestResponse($status_code, $response) {
+    $app = \Slim\Slim::getInstance();
+	
+	$format = $app->request()->params('format');
+	
+	echoXML($status_code, $response);
+	//echoJSON($status_code, $response);
+	/*
+	//TODO change default to json
+	if(endsWith($format,"xml",false) == true){
+	
+		echoXML($status_code, $response);
+	
+	}else{
+		echoJSON($status_code, $response);
+	
+	}
+    */
+
+}
+
 function echoXML($status_code, $response) {
     $app = \Slim\Slim::getInstance();
     // Http response code
@@ -123,7 +164,65 @@ function authenticate(\Slim\Route $route) {
 	*/
 }
 
-$app->get('/ticketdiary/stationcode/:id', 'authenticate', function($task_id) {
+$app->get('/test/requesturi/:id', 'authenticate', function($task_id) {
+            
+			
+			$app = \Slim\Slim::getInstance();
+			
+			$args = $app->request()->params('args');
+			
+            $response = array();
+           
+		    $response["error"] = false;
+            $response["code"] = $app->request()->getRootUri() ."  " . $app->request()->getResourceUri();
+			//echoRestResponse(200, $response);
+				
+ 
+        });
+		
+
+//Executes python script , arguements should be sent as parameter args with delimeted as #		
+$app->get('/execpython/:filename', 'authenticate', function($filename) {
+            
+			
+			$app = \Slim\Slim::getInstance();
+			
+			$pythonHandler = new PythonHandler();
+ 
+			$args = $app->request()->params('args');
+ 
+ 
+			if(NULL !== $args){
+				$args=str_replace("#"," ",$args);
+			}
+			$response=$pythonHandler->execute($filename,$args);
+			
+       //   print_r($response);
+			echoRestResponse(200, $response);
+				
+ 
+        });
+
+		
+		
+
+$app->get('/irctcservices/pnrstatus/:pnrno', 'authenticate', function($pnrno) {
+            //global $user_id;
+
+
+			
+				$response = array();
+            $curlHandler = new CurlHandler();
+ 
+ 
+            // fetch task
+            $response = $curlHandler->getPnrStatus($pnrno);
+			echoRestResponse(200, $response);
+ 
+        });
+		
+		
+$app->get('/irctcservices/stationcode/:id', 'authenticate', function($task_id) {
             //global $user_id;
             $response = array();
             $db = new PdoHandler();
