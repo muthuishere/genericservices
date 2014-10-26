@@ -1,9 +1,9 @@
-genericservices
+
+Set of Restful Service APIs written to be used across !!!
+
+Active Services
 ===============
 
-A set of Rest Service APIs
-
-Currently
-  Station details from code(IRCTC)
+   Station details from code(IRCTC)
 
 
