@@ -25,7 +25,6 @@ class PdoHandler {
 	
 	}
 	
-	
 	 	public function getStation($code) {
 	
 	

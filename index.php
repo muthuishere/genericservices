@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *'); //This allow to consume from any where
 /**
  * Step 1: Require the Slim Framework
  *
@@ -99,10 +100,8 @@ function echoRestResponse($status_code, $response) {
 	
 	$format = $app->request()->params('format');
 	
-	echoXML($status_code, $response);
-	//echoJSON($status_code, $response);
-	/*
-	//TODO change default to json
+	
+	
 	if(endsWith($format,"xml",false) == true){
 	
 		echoXML($status_code, $response);
@@ -111,7 +110,7 @@ function echoRestResponse($status_code, $response) {
 		echoJSON($status_code, $response);
 	
 	}
-    */
+    
 
 }
 
