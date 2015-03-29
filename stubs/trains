@@ -1,0 +1,37 @@
+{
+	"status" : "OK",
+	"result" : [{
+			"trainno" : "22638",
+			"name" : "WEST COAST EXP",
+			"cls" : "2A 3A SL",
+			"rundays" : "Daily",
+			"from" : "SGE",
+			"fromname" : "Sankaridrug",
+			"dep" : "08.40",
+			"to" : "MAS",
+			"toname" : "Chennai Central",
+			"arr" : "14.40",
+			"pantry" : 0,
+			"type" : "SUPERFAST",
+			"datefrom" : "28-Mar-2015",
+			"dateto" : "29-Mar-2020",
+			"traveltime" : "06.00"
+		}, {
+			"trainno" : "22650",
+			"name" : "YERCAUD EXP",
+			"cls" : "1A 2A 3A SL",
+			"rundays" : "Daily",
+			"from" : "SGE",
+			"fromname" : "Sankaridrug",
+			"dep" : "21.25",
+			"to" : "MAS",
+			"toname" : "Chennai Central",
+			"arr" : "04.05",
+			"pantry" : 0,
+			"type" : "SUPERFAST",
+			"datefrom" : "28-Mar-2015",
+			"dateto" : "29-Mar-2020",
+			"traveltime" : "06.40"
+		}
+	]
+}

@@ -81,6 +81,60 @@ public function array_push_assoc($array, $key, $value){
 	return $array;
 }
 
+
+public function getClassname($code){
+
+$status=$code;
+
+/*
+First class Air-Conditioned (AC) (Code:1A). The Executive class in Shatabdi type trains is also treated as Ist AC.
+AC 2-tier sleeper (Code:2A)
+First class (Code:FC)
+AC 3 Tier (Code:3A)
+3 E - AC 3 Tier Economy
+AC chair Car (Code:CC)
+Sleeper Class (Code:SL)
+Second Sitting (Code:2S)
+
+*/
+
+switch ($code) {
+    case "1A":
+        $status="First AC";
+        break;
+    case "2A":
+         $status="AC 2-tier sleeper";
+        break;
+    case "FC":
+         $status="First class";
+        break;
+	  case "3A":
+         $status="AC 3 Tier";
+        break;
+  case "3E":
+  case "3 E":
+         $status="AC 3 Tier Economy";
+        break;
+  case "CC":
+         $status="AC chair Car";
+        break;
+  case "SL":
+         $status="Sleeper Class";
+        break;
+  case "2S":
+         $status="Second Sitting";
+        break;
+ default:
+         $status=$code;
+        break;		
+  
+}
+return $status;
+
+
+
+
+}
 public function getStatusname($code){
 
 $status=$code;
@@ -154,15 +208,110 @@ return $status;
  
 				
 	}
+	
+	
+	public function getTrainDetails($trainno,$from,$to,$curdate) {
+	
+	
+	
+		$url=$this->api_url ."trains?key=" . $this->api_key . "&stnfrom=" .  $from . "&stnto=" . $to . "&date=" . $curdate;
+		
+	
+		
+	$result = $this->makeWebCall($url );
+	
+
+	
+	 $jfo=json_decode($result);
+	 
+	 
+	
+	$status = $jfo->status;
+	
+	$buffer=null;
+	
+	
+	if($status === "OK"){
+// copy the posts array to a php var
+
+
+	/*
+	"trainno" : "22638",
+			"name" : "WEST COAST EXP",
+			"cls" : "2A 3A SL",
+			"rundays" : "Daily",
+			"from" : "SGE",
+			"fromname" : "Sankaridrug",
+			"dep" : "08.40",
+			"to" : "MAS",
+			"toname" : "Chennai Central",
+			"arr" : "14.40",
+			"pantry" : 0,
+			"type" : "SUPERFAST",
+			"datefrom" : "28-Mar-2015",
+			"dateto" : "29-Mar-2020",
+			"traveltime" : "06.00"
+	
+	
+	*/
+
+		 
+			 $trains = $jfo->result;
+			// listing posts
+			foreach ($trains as $train) {
+				
+							if($train->trainno==$trainno){
+							
+							
+							//print_r($train);
+							 $buffer=array(
+								"trainno"=> $train->trainno,
+								"name" => $train->name,
+								"classes" => $train->cls,							
+								"rundays" => $train->rundays,
+								"fromcode" => $train->from,
+								"from" => $train->fromname,
+								"departuretime" => $train->dep,
+								"to" => $train->toname,
+								"tocode" => $train->to,
+								"arrivaltime" => $train->arr,
+								"pantrycount" => $train->pantry,
+								"traintype" => $train->type,
+								"datefrom" => $train->datefrom,
+								"dateto" => $train->dateto,
+								"traveltime" => $train->traveltime
+							 
+							 );
+							
+							}
+							
+			
+
+					
+				
+			}
+
+
+		 
+		 }
+		  
+		 
+		 $response["status"] = $status;		
+			$response["result"] =$buffer;
+		
+		//print_r($response);
+	return $response;
+	
+	}
 	public function getPnrStatus($pnrno) {
 	
 	
 	
-		$url_pnr=$this->api_url ."pnr?key=" . $this->api_key ."&pnr=" . $pnrno;
+	$url_pnr=$this->api_url ."pnr?key=" . $this->api_key ."&pnr=" . $pnrno;
 		
 		
-		//echo  $url_pnr;
 	
+		
 	$result = $this->makeWebCall($url_pnr );
 	
 //	echo $result;
@@ -176,6 +325,7 @@ return $status;
         "status" : "OK",
         "result" :  { 
                       "pnr" : "6533543051",
+					  "cls":"3A",
                       "eticket" : true,
                       "journey" : "09-Sep-2014",
                       "trainno" : "12898",
@@ -212,18 +362,43 @@ return $status;
 
 
 	 $tmpValue =array(
-				  "pnr" => $jfo->result->pnr,
-				  "iseticket" => $jfo->result->eticket,				  
-				  "train_name" => $jfo->result->name,
-				  "train_number" => $jfo->result->trainno,
-				  "from" => $this->getStationname($jfo->result->from),
-				  "to" => $this->getStationname($jfo->result->to),
-				  "reservedto" => "",
-				  "board" => $this->getStationname($jfo->result->brdg),				  
-				  "travel_date" => $jfo->result->journey,
-				  "passenger" => array()
-		 );
-		 
+					  "pnr" => $jfo->result->pnr,
+					  "class" => $this->getClassname($jfo->result->cls),	
+					   "classcode" => $jfo->result->cls,		
+					  
+					  "iseticket" => $jfo->result->eticket,				  
+					  "train_name" => $jfo->result->name,
+					  "train_number" => $jfo->result->trainno,
+					  "from" => $this->getStationname($jfo->result->from),
+					  "to" => $this->getStationname($jfo->result->to),
+					  "fromcode" => $jfo->result->from,
+					  "tocode" => $jfo->result->to,					
+					   "chart" => $jfo->result->chart,
+					  "board" => $this->getStationname($jfo->result->brdg),
+					  "boardcode" => $jfo->result->brdg,
+					  "travel_date" => $jfo->result->journey,
+					  "passenger" => array()
+			 );
+				 
+
+		$trainresponse=$this->getTrainDetails($jfo->result->trainno,$jfo->result->brdg,$jfo->result->to,$jfo->result->journey) ;
+
+				 
+		if($trainresponse["status"] === "OK"){
+
+			$traindetail=$trainresponse["result"];
+			
+			//print_r($traindetail);
+			
+		$tmpValue=$this->array_push_assoc($tmpValue, "departuretime", $traindetail["departuretime"]);
+		$tmpValue=$this->array_push_assoc($tmpValue, "arrivaltime", $traindetail["arrivaltime"]);
+		$tmpValue=$this->array_push_assoc($tmpValue, "traveltime", $traindetail["traveltime"]);
+		$tmpValue=$this->array_push_assoc($tmpValue, "traintype", $traindetail["traintype"]);
+		$tmpValue=$this->array_push_assoc($tmpValue, "pantrycount", $traindetail["pantrycount"]);
+
+
+		}
+			 
 			 $passengers = $jfo->result->passengers;
 			// listing posts
 			foreach ($passengers as $passenger) {
@@ -244,8 +419,8 @@ return $status;
 		 }
 		  
 		 
-		 $response["status"] = $status;		
-			$response["result"] =$tmpValue;
+		$response["status"] = $status;		
+		$response["result"] =$tmpValue;
 		
 	return $response;
 	
